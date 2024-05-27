@@ -5916,16 +5916,22 @@ void swap(Student *a, Student *b) {
 int main() {
     int swap_count = 0;
 
-    // Sample array of students
-    Student students[] = {
-        {"Raju", 3, 88.5},
-        {"Bablu", 1, 91.2},
-        {"Chotu", 4, 75.0},
-        {"Dadu", 2, 82.3}
-    };
-    
-    int n = sizeof(students) / sizeof(students[0]);
+    int n;
+    printf("Enter the number of students: ");
+    scanf("%d", &n);
 
+    // Input student details
+    Student students[n];
+    for (int i = 0; i < n; i++) {
+        printf("Enter details for student %d:\n", i + 1);
+        printf("Name: ");
+        scanf("%s", students[i].student_name);
+        printf("Roll No: ");
+        scanf("%d", &students[i].student_roll_no);
+        printf("Total Marks: ");
+        scanf("%f", &students[i].total_marks);
+    }
+    
     // Perform heap sort
     heapSort(students, n, &swap_count);
 
@@ -5940,6 +5946,7 @@ int main() {
 
     return 0;
 }
+
 
 ------------------------------------------------------------------------------------------------------------------------------------
 Assume that an array A with n elements was sorted in an ascending order, but two of its elements swapped their positions by a mistake while maintaining the array. Write a code to identify the swapped pair of elements and their positions in the asymptotically best possible time. [Assume that all given elements are distinct integers.]
