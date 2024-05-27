@@ -6138,22 +6138,22 @@ void insert(int key) {
     int index = hashFunction(key);
     
     if (hashTable[index].data == EMPTY) {
+        // If slot is empty, insert key directly
         hashTable[index].data = key;
     } else {
+        // Handle collision
         collisionCount++;
-        int originalIndex = index;
+        // Linear probing to find the next available slot
+        int startIndex = index;
         while (hashTable[index].data != EMPTY) {
             index = (index + 1) % TABLE_SIZE;
-            if (index == originalIndex) {
-                printf("Hash table is full!\n");
-                return;
-            }
         }
-        // Insert the new key
+
+        // Insert the new key at the available slot
         hashTable[index].data = key;
-        
-        // Update the chain
-        int chainIndex = hashFunction(key);
+
+        // Update the chain for the original slot
+        int chainIndex = startIndex;
         while (hashTable[chainIndex].chain != EMPTY) {
             chainIndex = hashTable[chainIndex].chain;
         }
@@ -6187,6 +6187,7 @@ int main() {
 
     return 0;
 }
+
 ----------------------------------------------------------------------------------------------------------------------------
 EXTRAS
 ----------------------------------------------------------------------------------------------------------------------------
