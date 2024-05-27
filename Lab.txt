@@ -6304,3 +6304,457 @@ Loop
         decrease nodeCount
        // At this point, queue has nodes of next level
 -----------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+ Write a Program to create a Binary Tree and perform following non-recursive operations on it. a. Preorder Traversal b. Count Leaf Nodes c. Count total no. of nodes d. Display height of a tree.
+--------------------------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition of the binary tree node
+struct node {
+    int data;
+    struct node *left, *right;
+};
+
+// Definition of the stack used for non-recursive traversals
+struct stack {
+    struct node *T;
+    struct stack *next;
+};
+
+struct stack *top = NULL;
+
+// Function to push a node onto the stack
+void push(struct node *t) {
+    struct stack *newnode;
+    newnode = (struct stack *)malloc(sizeof(struct stack));
+    newnode->T = t;
+    newnode->next = top;
+    top = newnode;
+}
+
+// Function to pop a node from the stack
+struct node *pop() {
+    if (top == NULL) {
+        return NULL;
+    } else {
+        struct node *temp = top->T;
+        struct stack *t = top;
+        top = top->next;
+        free(t);
+        return temp;
+    }
+}
+
+// Function to create a new binary tree node
+struct node *createNode(int key) {
+    struct node *newnode = (struct node *)malloc(sizeof(struct node));
+    newnode->data = key;
+    newnode->left = NULL;
+    newnode->right = NULL;
+    return newnode;
+}
+
+// Function for non-recursive Preorder Traversal
+void preorderWithoutRe(struct node *root) {
+    struct node *t;
+    while (root != NULL) {
+        printf("%d ", root->data);
+        push(root);
+        root = root->left;
+    }
+    while (top != NULL) {
+        t = pop();
+        root = t->right;
+        while (root != NULL) {
+            printf("%d ", root->data);
+            push(root);
+            root = root->left;
+        }
+    }
+}
+
+// Function to insert a node into the binary tree
+struct node *insert(struct node *root, int data) {
+    if (root == NULL) {
+        root = createNode(data);
+    } else if (data > root->data) {
+        root->right = insert(root->right, data);
+    } else {
+        root->left = insert(root->left, data);
+    }
+    return root;
+}
+
+// Function to count the total number of nodes in the binary tree
+int countNodes(struct node *root) {
+    if (root == NULL)
+        return 0;
+
+    struct node *stack[100];
+    int top = -1, count = 0;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        struct node *node = stack[top--];
+        count++;
+
+        if (node->right)
+            stack[++top] = node->right;
+        if (node->left)
+            stack[++top] = node->left;
+    }
+
+    return count;
+}
+
+// Function to count the number of leaf nodes in the binary tree
+int countLeafNodes(struct node *root) {
+    if (root == NULL)
+        return 0;
+
+    struct node *stack[100];
+    int top = -1, count = 0;
+    stack[++top] = root;
+
+    while (top >= 0) {
+        struct node *node = stack[top--];
+        if (node->left == NULL && node->right == NULL)
+            count++;
+        if (node->right)
+            stack[++top] = node->right;
+        if (node->left)
+            stack[++top] = node->left;
+    }
+
+    return count;
+}
+
+// Function to find the height of the binary tree
+int findHeight(struct node *root) {
+    if (root == NULL)
+        return -1;
+
+    struct node *queue[100];
+    int front = 0, rear = 0, height = -1;
+    queue[rear++] = root;
+
+    while (front < rear) {
+        int nodeCount = rear - front;
+
+        while (nodeCount > 0) {
+            struct node *node = queue[front++];
+
+            if (node->left)
+                queue[rear++] = node->left;
+            if (node->right)
+                queue[rear++] = node->right;
+
+            nodeCount--;
+        }
+
+        height++;
+    }
+
+    return height;
+}
+
+// Main function to demonstrate the operations
+int main() {
+    struct node *root = NULL;
+
+    // Insert nodes into the binary tree
+    root = insert(root, 10);
+    root = insert(root, 12);
+    root = insert(root, 7);
+    root = insert(root, 5);
+    root = insert(root, 8);
+    root = insert(root, 11);
+    root = insert(root, 14);
+
+    printf("Non-recursive Preorder Traversal: ");
+    preorderWithoutRe(root);
+    printf("\n");
+
+    int totalNodes = countNodes(root);
+    printf("Total number of nodes: %d\n", totalNodes);
+
+    int leafNodes = countLeafNodes(root);
+    printf("Number of leaf nodes: %d\n", leafNodes);
+
+    int height = findHeight(root);
+    printf("Height of the tree: %d\n", height);
+
+    return 0;
+}
+
+'''
+Preorder (non recursive) :- 
+- Take an empty stack.
+- Push the root of the tree in stack.
+- Take the temporary node and initialize it with root node of tree.
+- Print the node and push the left node of temp node in stack and initialize temp from temp->left.
+- do the same task till left node temp is not null.
+- If temp become null and stack is not empty then pop the element from the stack and  initialize temp from Poped element’s right node.
+- do the same task of pushing left node of and initializing temp from temp left.
+- If temp is null and stack is empty then return.
+Postorder (non recursive) :-
+- Create an empty stack.
+- While root is not NULL, push root->right and then root to the stack.
+- And Set root as root->left.
+- If root becomes NULL, pop item from the stack and set it as root.
+- If the popped item has a right child and the right child is at top of stack, then remove the right child from stack, push the root back and set root as root’s right child.
+- Else print root’s data and set root as NULL.
+- Repeat the above two steps until stack is not empty.
+```
+
+---------------------------------------------------------------------------------------------------------------------------------
+ Implement Push and POP operations of STACK on Doubly linked lists
+--------------------------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition of the doubly linked list node
+struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+};
+
+// Definition of the stack with a doubly linked list
+struct Stack {
+    struct Node* top;
+};
+
+// Function to create a new doubly linked list node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+// Function to initialize the stack
+void initializeStack(struct Stack* stack) {
+    stack->top = NULL;
+}
+
+// Function to push an element onto the stack
+void push(struct Stack* stack, int data) {
+    struct Node* newNode = createNode(data);
+    if (stack->top == NULL) {
+        stack->top = newNode;
+    } else {
+        newNode->next = stack->top;
+        stack->top->prev = newNode;
+        stack->top = newNode;
+    }
+    printf("%d pushed onto stack\n", data);
+}
+
+// Function to pop an element from the stack
+int pop(struct Stack* stack) {
+    if (stack->top == NULL) {
+        printf("Stack underflow\n");
+        return -1; // Return -1 to indicate stack underflow
+    } else {
+        struct Node* temp = stack->top;
+        int poppedData = temp->data;
+        stack->top = stack->top->next;
+        if (stack->top != NULL) {
+            stack->top->prev = NULL;
+        }
+        free(temp);
+        printf("%d popped from stack\n", poppedData);
+        return poppedData;
+    }
+}
+
+// Function to display the stack
+void displayStack(struct Stack* stack) {
+    struct Node* current = stack->top;
+    if (current == NULL) {
+        printf("Stack is empty\n");
+        return;
+    }
+    printf("Stack elements: ");
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+// Main function to demonstrate stack operations
+int main() {
+    struct Stack stack;
+    initializeStack(&stack);
+
+    push(&stack, 10);
+    push(&stack, 20);
+    push(&stack, 30);
+    displayStack(&stack);
+
+    pop(&stack);
+    displayStack(&stack);
+
+    pop(&stack);
+    displayStack(&stack);
+
+    pop(&stack);
+    displayStack(&stack);
+
+    return 0;
+}
+/*
+Node Structure:
+
+Each node has data, next (pointer to the next node), and prev (pointer to the previous node).
+Stack Initialization:
+
+The stack is represented by a structure with a single pointer top, which points to the top of the stack.
+Push Operation:
+
+A new node is created and inserted at the beginning of the doubly linked list.
+The next pointer of the new node points to the current top of the stack.
+The prev pointer of the current top node is updated to point to the new node.
+The top of the stack is updated to the new node.
+Pop Operation:
+
+The top node is removed from the stack.
+The top pointer is updated to point to the next node in the list.
+If the stack becomes empty (top becomes NULL), no further updates to pointers are needed.
+The removed node's memory is freed.
+Display Stack:
+
+Traverses the stack from the top to the bottom, printing each element's data.
+This implementation provides a clear and efficient way to manage stack operations using a doubly linked list in C.
+*/
+---------------------------------------------------------------------------------------------------------------------------------
+Implement ADD and DELETE operations of QUEUE on Doubly linked lists
+--------------------------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+// Definition of the doubly linked list node
+struct Node {
+    int data;
+    struct Node* next;
+    struct Node* prev;
+};
+
+// Definition of the queue with a doubly linked list
+struct Queue {
+    struct Node* front;
+    struct Node* rear;
+};
+
+// Function to create a new doubly linked list node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+    return newNode;
+}
+
+// Function to initialize the queue
+void initializeQueue(struct Queue* queue) {
+    queue->front = NULL;
+    queue->rear = NULL;
+}
+
+// Function to add (enqueue) an element to the queue
+void enqueue(struct Queue* queue, int data) {
+    struct Node* newNode = createNode(data);
+    if (queue->rear == NULL) {
+        queue->front = newNode;
+        queue->rear = newNode;
+    } else {
+        queue->rear->next = newNode;
+        newNode->prev = queue->rear;
+        queue->rear = newNode;
+    }
+    printf("%d enqueued to queue\n", data);
+}
+
+// Function to delete (dequeue) an element from the queue
+int dequeue(struct Queue* queue) {
+    if (queue->front == NULL) {
+        printf("Queue underflow\n");
+        return -1; // Return -1 to indicate queue underflow
+    } else {
+        struct Node* temp = queue->front;
+        int dequeuedData = temp->data;
+        queue->front = queue->front->next;
+        if (queue->front != NULL) {
+            queue->front->prev = NULL;
+        } else {
+            queue->rear = NULL; // If the queue becomes empty
+        }
+        free(temp);
+        printf("%d dequeued from queue\n", dequeuedData);
+        return dequeuedData;
+    }
+}
+
+// Function to display the queue
+void displayQueue(struct Queue* queue) {
+    struct Node* current = queue->front;
+    if (current == NULL) {
+        printf("Queue is empty\n");
+        return;
+    }
+    printf("Queue elements: ");
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+// Main function to demonstrate queue operations
+int main() {
+    struct Queue queue;
+    initializeQueue(&queue);
+
+    enqueue(&queue, 10);
+    enqueue(&queue, 20);
+    enqueue(&queue, 30);
+    displayQueue(&queue);
+
+    dequeue(&queue);
+    displayQueue(&queue);
+
+    dequeue(&queue);
+    displayQueue(&queue);
+
+    dequeue(&queue);
+    displayQueue(&queue);
+
+    return 0;
+}
+/*
+Node Structure:
+
+Each node has data, next (pointer to the next node), and prev (pointer to the previous node).
+Queue Initialization:
+
+The queue is represented by a structure with two pointers: front and rear, which point to the front and rear of the queue, respectively.
+Enqueue Operation:
+
+A new node is created and added at the rear of the queue.
+If the queue is empty, both front and rear pointers are updated to point to the new node.
+Otherwise, the new node is linked to the current rear node, and the rear pointer is updated to the new node.
+Dequeue Operation:
+
+The front node is removed from the queue.
+The front pointer is updated to point to the next node in the list.
+If the queue becomes empty (front becomes NULL), the rear pointer is also set to NULL.
+The removed node's memory is freed.
+Display Queue:
+
+Traverses the queue from the front to the rear, printing each element's data.
+This implementation provides a clear and efficient way to manage queue operations using a doubly linked list in C.
+*/
