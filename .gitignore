@@ -1,0 +1,7 @@
+# ignore environment files and secrets
+.env
+.secrets/
+# Python artifacts (optional)
+__pycache__/
+*.pyc
+.ipynb_checkpoints
